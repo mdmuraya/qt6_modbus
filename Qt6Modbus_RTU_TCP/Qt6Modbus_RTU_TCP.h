@@ -26,7 +26,7 @@ class Qt6Modbus_RTU_TCP : public QObject
         void onStopMotor();
 
     private slots:
-        void onGetVFDStatusTimerTimeout();
+        void onGetVFDStatus();
 
     private:
         //QModbusClient *modbusDevice = nullptr;

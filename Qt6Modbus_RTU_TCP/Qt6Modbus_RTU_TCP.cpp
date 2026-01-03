@@ -15,9 +15,9 @@ Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP(QObject *parent)
     _getVFDStatusTimer = std::make_unique<QTimer>();
 
     // setup signal and slot
-    QObject::connect(_getVFDStatusTimer.get(), SIGNAL(timeout()),this, SLOT(onGetVFDStatusTimerTimeout()));
+    QObject::connect(_getVFDStatusTimer.get(), SIGNAL(timeout()),this, SLOT(onGetVFDStatus()));
 
-    _getVFDStatusTimer->start(500);
+    _getVFDStatusTimer->start(1000); //1 second
 
 }
 
@@ -62,6 +62,40 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
             //ui->actionConnect->setEnabled(false);
             //ui->actionDisconnect->setEnabled(true);
             qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " SUCCESS";
+
+            int _modbusDeviceId = 45;
+            int addressToWrite = 8193;
+
+            QVector<quint16> dataToWrite;
+            dataToWrite.append(5000); // Speed of the motor (Hz)
+
+            QModbusDataUnit writeHoldingRegisters(QModbusDataUnit::HoldingRegisters, addressToWrite, dataToWrite.size());
+
+            for (int i = 0 ; i < dataToWrite.size() ; i++)
+            {
+                writeHoldingRegisters.setValue(i, dataToWrite.at(i));
+            }
+
+            if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+            {
+                if (!reply->isFinished())
+                {
+                    connect(reply, &QModbusReply::finished, this, [this, reply]()
+                            {
+                                if (reply->error() == QModbusDevice::NoError)
+                                {
+                                    qDebug() << "Data is write sucessfully";
+                                    //statusBar()->showMessage("Data is write sucessfully");
+                                }
+                                else
+                                {
+                                    qDebug() << "Data is write failed";
+                                    //statusBar()->showMessage("Data is write failed : " + reply->errorString());
+                                }
+                                reply->deleteLater(); // Clean up the reply object
+                            });
+                }
+            }
 
         }
 
@@ -236,9 +270,9 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
     }
 }
 
-void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
+void Qt6Modbus_RTU_TCP::onGetVFDStatus()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()";
+    qDebug() << "Qt6Modbus_RTU_TCP::onGetVFDStatus()";
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -342,7 +376,7 @@ QVariantList  Qt6Modbus_RTU_TCP::getAvailableCOMPorts()
         availableCOMPort["uniqueId"] = info.portName();
         availableCOMPort["displayText"] = info.portName() + " (" + info.manufacturer() + " - " + info.description() + ")";
 
-        availableCOMPorts.append(availableCOMPort);
+        availableCOMPorts.push_back(availableCOMPort);
     }
     //qDebug() << availableCOMPorts;
 

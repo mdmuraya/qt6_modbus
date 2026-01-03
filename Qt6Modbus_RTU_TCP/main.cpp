@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
-    QQuickStyle::setStyle("FluentWinUI3");
+    QQuickStyle::setStyle("Material");
     engine.loadFromModule("Qt6Modbus_RTU_TCP", "Main");
 
     return app.exec();
