@@ -2,6 +2,7 @@
 #include <QDebug>
 
 
+
 Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP(QObject *parent)
     : QObject{parent}
 {
@@ -31,6 +32,11 @@ void Qt6Modbus_RTU_TCP::onStartMotorREV()
 void Qt6Modbus_RTU_TCP::onStopMotor()
 {
     qDebug() << "Qt6Modbus_RTU_TCP::onStopMotor()";
+}
+
+Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()
+{
+    qDebug() << "Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()";
 }
 
 
