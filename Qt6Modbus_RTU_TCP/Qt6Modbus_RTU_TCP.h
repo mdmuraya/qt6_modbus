@@ -5,6 +5,7 @@
 #include <QModbusClient>
 #include <QSerialPortInfo>
 #include <QVariantList>
+#include <QTimer>
 
 
 class Qt6Modbus_RTU_TCP : public QObject
@@ -24,9 +25,14 @@ class Qt6Modbus_RTU_TCP : public QObject
         void onStartMotorREV();
         void onStopMotor();
 
+    private slots:
+        void onGetVFDStatusTimerTimeout();
+
     private:
-        QModbusClient *modbusDevice = nullptr;
-        //std::unique_ptr<QModbusClient> modbusDevice; // Default initialized to nullptr
+        //QModbusClient *modbusDevice = nullptr;
+        //QTimer *timer = nullptr;
+        std::unique_ptr<QModbusClient> _modbusDevice; // Default initialized to nullptr
+        std::unique_ptr<QTimer> _getVFDStatusTimer; // Default initialized to nullptr
 };
 
 #endif // QT6MODBUS_RTU_TCP_H
