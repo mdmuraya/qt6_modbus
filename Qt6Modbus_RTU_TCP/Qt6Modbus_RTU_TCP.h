@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QModbusClient>
+#include <QSerialPortInfo>
+#include <QVariantList>
+
 
 class Qt6Modbus_RTU_TCP : public QObject
 {
@@ -14,6 +17,7 @@ class Qt6Modbus_RTU_TCP : public QObject
     signals:
 
     public slots:
+        QVariantList  getAvailableCOMPorts();
         void onConnectToVFD(QString port);
         void onClearVFDFaults();
         void onStartMotorFWD();
@@ -22,6 +26,7 @@ class Qt6Modbus_RTU_TCP : public QObject
 
     private:
         QModbusClient *modbusDevice = nullptr;
+        //QVariantList availableCOMPorts;
 };
 
 #endif // QT6MODBUS_RTU_TCP_H

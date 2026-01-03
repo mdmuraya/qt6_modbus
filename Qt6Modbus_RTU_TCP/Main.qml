@@ -12,13 +12,6 @@ Window {
     visible: true
     title: qsTr("Qt6Modbus_RTU_TCP")
 
-    ListModel {
-            id: availableCOMPorts
-            ListElement { displayText: "COM1"; uniqueId: "COM1" }
-            ListElement { displayText: "COM2"; uniqueId: "COM2" }
-            ListElement { displayText: "COM3"; uniqueId: "COM3" }
-        }
-
     ColumnLayout {
         anchors.margins: 10
         anchors.fill: parent
@@ -31,15 +24,24 @@ Window {
             }
             ComboBox {
                 id: comboBoxVFDCOMPort
-                model: availableCOMPorts
+                implicitContentWidthPolicy: ComboBox.WidestText
                 textRole: "displayText" // Role used for display text
                 valueRole: "uniqueId" // Role used for unique ID (value property)
                 onCurrentIndexChanged: {
                     // Access the unique ID using the currentValue property
                     console.log("Selected comboBoxVFDCOMPort.currentValue:", comboBoxVFDCOMPort.currentValue)
                     // or directly from the model
-                    console.log("Selected availableCOMPorts.get(currentIndex).uniqueId:", availableCOMPorts.get(currentIndex).uniqueId)
-                    console.log("Selected availableCOMPorts.get(currentIndex).displayText:", availableCOMPorts.get(currentIndex).displayText)
+                    console.log("Selected availableCOMPorts.get(currentIndex).uniqueId:", comboBoxVFDCOMPort.model[currentIndex].uniqueId)
+                    console.log("Selected availableCOMPorts.get(currentIndex).displayText:", comboBoxVFDCOMPort.model[currentIndex].displayText)
+                }
+            }
+            Button {
+                id: buttonAvailableCOMPorts
+                text: qsTr("Refresh")
+                onClicked: {
+                    console.log("'Refresh COM ports' clicked")
+                    console.log("Available COM ports: " + comboBoxVFDCOMPort.model)
+                    comboBoxVFDCOMPort.model = _Qt6Modbus_RTU_TCP.getAvailableCOMPorts()
                 }
             }
 
@@ -105,6 +107,10 @@ Window {
         title: "My message dialog"
         text: "Hey you"
         buttons: MessageDialog.Ok | MessageDialog.Cancel
+    }
+
+    Component.onCompleted: {
+        comboBoxVFDCOMPort.model = _Qt6Modbus_RTU_TCP.getAvailableCOMPorts()
     }
 }
 
