@@ -260,12 +260,42 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
                                 //statusBar()->showMessage("Data read sucessfully");
 
                                 const QModbusDataUnit units = reply_1->result();
-                                //ui->listWidget_Holding_Data->clear();
+
+                                QVariantList  listOfAvailableData;
+
                                 for (int i = 0 ; i < units.valueCount() ; i++)
                                 {
                                     QString entry = "Address : " + QString::number(units.startAddress() + i) + " Values : " + QString::number(units.value(i), 16) + " | " + QString::number(units.value(i));
                                     //ui->listWidget_Holding_Data->addItem(Entry);
                                     qDebug() << "Data read sucessfully: " + entry;
+
+                                    QVariantMap  availableData;
+
+                                    availableData["address"] = QString::number(units.startAddress() + i + 1);
+                                    QString label = "Unknown label";
+
+                                    switch (i)
+                                    {
+                                        case 0: //base address relative to 4xxxx
+                                            break;
+                                        case 1: //1st 16-bit register relative to 4xxxx
+                                            label = "Frequency command (Hz)";
+                                            break;
+                                        case 2:
+                                            label = "Frequency command (Hz)";
+                                            break;
+                                        default:
+                                            availableData["Label"] = "Unknown label";
+                                            break;
+
+                                    }
+
+                                    availableData["Label"] = label;
+                                    availableData["HexValue"] = QString::number(units.value(i), 16);
+                                    availableData["DecimalValue"] =  QString::number(units.value(i));
+
+
+                                    listOfAvailableData.append(availableData);
                                 }
                             }
                             else
