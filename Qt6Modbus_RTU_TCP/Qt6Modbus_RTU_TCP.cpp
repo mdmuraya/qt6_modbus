@@ -16,7 +16,10 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
 {
     qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port;
 
-    modbusDevice = std::make_unique<QModbusRtuSerialClient>();
+    if(modbusDevice == nullptr)
+    {
+        modbusDevice = new QModbusRtuSerialClient(this);
+    }
 
     //modbusDevice = new QModbusRtuSerialClient(this);
 
@@ -30,6 +33,17 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
 
         modbusDevice->setTimeout(10000);
         modbusDevice->setNumberOfRetries(3);
+
+        // Connect to signals to handle connection status and errors
+        connect(modbusDevice, &QModbusDevice::stateChanged, this, [&](QModbusDevice::State state){
+            qDebug() << "State changed:" << state;
+        });
+
+        connect(modbusDevice, &QModbusDevice::errorOccurred, this, [&](QModbusDevice::Error error){
+            if (error == QModbusDevice::TimeoutError) {
+                qDebug() << "Modbus Timeout Error occurred:" << modbusDevice->errorString();
+            }
+        });
 
 
         if (!modbusDevice->connectDevice()) {
@@ -75,6 +89,7 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
                                     qDebug() << "Data read failed";
                                    // statusBar()->showMessage("Data read failed : " + reply_1->errorString());
                                 }
+                            reply->deleteLater(); // Clean up the reply object
                         });
                     }
                 }
@@ -122,6 +137,7 @@ void Qt6Modbus_RTU_TCP::onClearVFDFaults()
                         qDebug() << "Data is write failed";
                         //statusBar()->showMessage("Data is write failed : " + reply->errorString());
                     }
+                    reply->deleteLater(); // Clean up the reply object
                 });
             }
         }
@@ -152,18 +168,19 @@ void Qt6Modbus_RTU_TCP::onStartMotorFWD()
             if (!reply->isFinished())
             {
                 connect(reply, &QModbusReply::finished, this, [this, reply]()
-                        {
-                            if (reply->error() == QModbusDevice::NoError)
-                            {
-                                qDebug() << "Data is write sucessfully";
-                                //statusBar()->showMessage("Data is write sucessfully");
-                            }
-                            else
-                            {
-                                qDebug() << "Data is write failed";
-                                //statusBar()->showMessage("Data is write failed : " + reply->errorString());
-                            }
-                        });
+                {
+                    if (reply->error() == QModbusDevice::NoError)
+                    {
+                        qDebug() << "Data is write sucessfully";
+                        //statusBar()->showMessage("Data is write sucessfully");
+                    }
+                    else
+                    {
+                        qDebug() << "Data is write failed";
+                        //statusBar()->showMessage("Data is write failed : " + reply->errorString());
+                    }
+                    reply->deleteLater(); // Clean up the reply object
+                });
             }
         }
     }
@@ -193,18 +210,19 @@ void Qt6Modbus_RTU_TCP::onStartMotorREV()
             if (!reply->isFinished())
             {
                 connect(reply, &QModbusReply::finished, this, [this, reply]()
-                        {
-                            if (reply->error() == QModbusDevice::NoError)
-                            {
-                                qDebug() << "Data is write sucessfully";
-                                //statusBar()->showMessage("Data is write sucessfully");
-                            }
-                            else
-                            {
-                                qDebug() << "Data is write failed";
-                                //statusBar()->showMessage("Data is write failed : " + reply->errorString());
-                            }
-                        });
+                {
+                    if (reply->error() == QModbusDevice::NoError)
+                    {
+                        qDebug() << "Data is write sucessfully";
+                        //statusBar()->showMessage("Data is write sucessfully");
+                    }
+                    else
+                    {
+                        qDebug() << "Data is write failed";
+                        //statusBar()->showMessage("Data is write failed : " + reply->errorString());
+                    }
+                    reply->deleteLater(); // Clean up the reply object
+                });
             }
         }
     }
@@ -234,18 +252,19 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
             if (!reply->isFinished())
             {
                 connect(reply, &QModbusReply::finished, this, [this, reply]()
-                        {
-                            if (reply->error() == QModbusDevice::NoError)
-                            {
-                                qDebug() << "Data is write sucessfully";
-                                //statusBar()->showMessage("Data is write sucessfully");
-                            }
-                            else
-                            {
-                                qDebug() << "Data is write failed";
-                                //statusBar()->showMessage("Data is write failed : " + reply->errorString());
-                            }
-                        });
+                {
+                    if (reply->error() == QModbusDevice::NoError)
+                    {
+                        qDebug() << "Data is write sucessfully";
+                        //statusBar()->showMessage("Data is write sucessfully");
+                    }
+                    else
+                    {
+                        qDebug() << "Data is write failed";
+                        //statusBar()->showMessage("Data is write failed : " + reply->errorString());
+                    }
+                    reply->deleteLater(); // Clean up the reply object
+                });
             }
         }
     }
@@ -286,6 +305,12 @@ QVariantList  Qt6Modbus_RTU_TCP::getAvailableCOMPorts()
 Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()
 {
     qDebug() << "Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()";
+
+    if(modbusDevice != nullptr)
+    {
+        delete modbusDevice;
+        modbusDevice = nullptr;
+    }
 }
 
 
