@@ -45,6 +45,18 @@ Window {
 
         }
 
+        RowLayout {
+            Label {
+               id: labelVFDSpeed
+               text: qsTr("VFD Speed: ")
+            }
+
+            Dial {
+                   id: dialVFDSpeed
+                   from: 0
+                   to: 100
+                }
+        }
 
         RowLayout {
             Button {
