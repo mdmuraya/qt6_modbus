@@ -12,7 +12,7 @@ class Qt6Modbus_RTU_TCP : public QObject
     signals:
 
     public slots:
-        void onConnectToVFD();
+        void onConnectToVFD(QString port);
         void onClearVFDFaults();
         void onStartMotorFWD();
         void onStartMotorREV();

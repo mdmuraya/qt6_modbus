@@ -8,9 +8,9 @@ Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP(QObject *parent)
     qDebug() << "Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP()";
 }
 
-void Qt6Modbus_RTU_TCP::onConnectToVFD()
+void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD()";
+    qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port;
 }
 
 void Qt6Modbus_RTU_TCP::onClearVFDFaults()

@@ -12,6 +12,13 @@ Window {
     visible: true
     title: qsTr("Qt6Modbus_RTU_TCP")
 
+    ListModel {
+            id: availableCOMPorts
+            ListElement { displayText: "COM1"; uniqueId: "COM1" }
+            ListElement { displayText: "COM2"; uniqueId: "COM2" }
+            ListElement { displayText: "COM3"; uniqueId: "COM3" }
+        }
+
     ColumnLayout {
         anchors.margins: 10
         anchors.fill: parent
@@ -24,7 +31,16 @@ Window {
             }
             ComboBox {
                 id: comboBoxVFDCOMPort
-                model: ["COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "COM10", "COM11", "COM12"]
+                model: availableCOMPorts
+                textRole: "displayText" // Role used for display text
+                valueRole: "uniqueId" // Role used for unique ID (value property)
+                onCurrentIndexChanged: {
+                    // Access the unique ID using the currentValue property
+                    console.log("Selected comboBoxVFDCOMPort.currentValue:", comboBoxVFDCOMPort.currentValue)
+                    // or directly from the model
+                    console.log("Selected availableCOMPorts.get(currentIndex).uniqueId:", availableCOMPorts.get(currentIndex).uniqueId)
+                    console.log("Selected availableCOMPorts.get(currentIndex).displayText:", availableCOMPorts.get(currentIndex).displayText)
+                }
             }
 
         }
@@ -36,7 +52,7 @@ Window {
                 text: qsTr("Connect to VFD")
                 onClicked: {
                     console.log("'Connect to VFD' clicked")
-                    _Qt6Modbus_RTU_TCP.onConnectToVFD();
+                    _Qt6Modbus_RTU_TCP.onConnectToVFD(availableCOMPorts.get(comboBoxVFDCOMPort.currentIndex).uniqueId);
                 }
             }
 
