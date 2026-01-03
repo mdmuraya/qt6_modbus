@@ -18,6 +18,8 @@ qt_add_qml_module(appQt6Modbus_RTU_TCP
     URI Qt6Modbus_RTU_TCP
     QML_FILES
         Main.qml
+        SOURCES Qt6Modbus_RTU_TCP.h Qt6Modbus_RTU_TCP.cpp
+        SOURCES BoilerPlate.h BoilerPlate.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
