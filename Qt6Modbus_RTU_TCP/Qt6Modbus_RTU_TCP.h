@@ -25,8 +25,8 @@ class Qt6Modbus_RTU_TCP : public QObject
         void onStopMotor();
 
     private:
-        QModbusClient *modbusDevice = nullptr;
-        //QVariantList availableCOMPorts;
+        //QModbusClient *modbusDevice = nullptr;
+        std::unique_ptr<QModbusClient> modbusDevice; // Default initialized to nullptr
 };
 
 #endif // QT6MODBUS_RTU_TCP_H

@@ -28,9 +28,7 @@ Window {
                 textRole: "displayText" // Role used for display text
                 valueRole: "uniqueId" // Role used for unique ID (value property)
                 onCurrentIndexChanged: {
-                    // Access the unique ID using the currentValue property
-                    console.log("Selected comboBoxVFDCOMPort.currentValue:", comboBoxVFDCOMPort.currentValue)
-                    // or directly from the model
+                    // Access the unique ID directly from the model
                     console.log("Selected availableCOMPorts.get(currentIndex).uniqueId:", comboBoxVFDCOMPort.model[currentIndex].uniqueId)
                     console.log("Selected availableCOMPorts.get(currentIndex).displayText:", comboBoxVFDCOMPort.model[currentIndex].displayText)
                 }
@@ -54,7 +52,7 @@ Window {
                 text: qsTr("Connect to VFD")
                 onClicked: {
                     console.log("'Connect to VFD' clicked")
-                    _Qt6Modbus_RTU_TCP.onConnectToVFD(availableCOMPorts.get(comboBoxVFDCOMPort.currentIndex).uniqueId);
+                    _Qt6Modbus_RTU_TCP.onConnectToVFD(comboBoxVFDCOMPort.model[comboBoxVFDCOMPort.currentIndex].uniqueId);
                 }
             }
 

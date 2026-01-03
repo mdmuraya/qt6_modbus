@@ -16,17 +16,30 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
 {
     qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port;
 
-    QList<QSerialPortInfo> serialPortInfos = QSerialPortInfo::availablePorts();
-    qDebug() << "Available ports count:" << serialPortInfos.count();
+    modbusDevice = std::make_unique<QModbusRtuSerialClient>();
 
-    for (const QSerialPortInfo &info : serialPortInfos) {
-        qDebug() << "Port Name:" << info.portName();
-        qDebug() << "System Location:" << info.systemLocation();
-        qDebug() << "Description:" << info.description();
-        qDebug() << "Manufacturer:" << info.manufacturer();
-        qDebug() << "Vendor ID:" << info.vendorIdentifier();
-        qDebug() << "Product ID:" << info.productIdentifier();
-        qDebug() << "-----------------------------------";
+    //modbusDevice = new QModbusRtuSerialClient(this);
+
+    if (modbusDevice->state() != QModbusDevice::ConnectedState)
+    {
+        modbusDevice->setConnectionParameter(QModbusDevice::SerialPortNameParameter, port);
+        modbusDevice->setConnectionParameter(QModbusDevice::SerialParityParameter,QSerialPort::Parity::EvenParity);
+        modbusDevice->setConnectionParameter(QModbusDevice::SerialBaudRateParameter,QSerialPort::BaudRate::Baud9600);
+        modbusDevice->setConnectionParameter(QModbusDevice::SerialDataBitsParameter,QSerialPort::DataBits::Data8);
+        modbusDevice->setConnectionParameter(QModbusDevice::SerialStopBitsParameter,QSerialPort::StopBits::OneStop);
+
+        modbusDevice->setTimeout(10000);
+        modbusDevice->setNumberOfRetries(3);
+
+        if (!modbusDevice->connectDevice()) {
+            //statusBar()->showMessage(tr("Connect failed: %1").arg(modbusDevice->errorString()), 5000);
+            qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " FAILED";
+        } else {
+            //ui->actionConnect->setEnabled(false);
+            //ui->actionDisconnect->setEnabled(true);
+            qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " SUCCESS";
+        }
+
     }
 }
 
@@ -55,26 +68,28 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
 QVariantList  Qt6Modbus_RTU_TCP::getAvailableCOMPorts()
 {
     QList<QSerialPortInfo> serialPortInfos = QSerialPortInfo::availablePorts();
+    qDebug() << "Available ports count:" << serialPortInfos.count();
 
     QVariantList  availableCOMPorts;
 
     for (const QSerialPortInfo &info : serialPortInfos)
     {
+        qDebug() << "Port Name:" << info.portName();
+        qDebug() << "System Location:" << info.systemLocation();
+        qDebug() << "Description:" << info.description();
+        qDebug() << "Manufacturer:" << info.manufacturer();
+        qDebug() << "Vendor ID:" << info.vendorIdentifier();
+        qDebug() << "Product ID:" << info.productIdentifier();
+        qDebug() << "-----------------------------------";
+
         QVariantMap  availableCOMPort;
 
-        //availableCOMPort.insert("uniqueId", info.portName());
-        //availableCOMPort.insert("displayText", info.portName() + " (" + info.description() + ")");
-
-        //QVariantMap availableCOMPort;
         availableCOMPort["uniqueId"] = info.portName();
-        availableCOMPort["displayText"] = info.portName() + " (" + info.description() + ")";
-
+        availableCOMPort["displayText"] = info.portName() + " (" + info.manufacturer() + " - " + info.description() + ")";
 
         availableCOMPorts.append(availableCOMPort);
-
     }
-
-    qDebug() << availableCOMPorts;
+    //qDebug() << availableCOMPorts;
 
     return availableCOMPorts;
 
