@@ -279,10 +279,16 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
                                         case 0: //base address relative to 4xxxx
                                             break;
                                         case 1: //1st 16-bit register relative to 4xxxx
-                                            label = "Frequency command (Hz)";
+                                            label = "Frequency command (0.01 Hz)";
                                             break;
                                         case 2:
-                                            label = "Frequency command (Hz)";
+                                            label = "Frequency output (0.01 Hz)";
+                                            break;
+                                        case 3:
+                                            label = "DC bus output voltage (V)";
+                                            break;
+                                        case 3:
+                                            label = "Output voltage (0.1 V)";
                                             break;
                                         default:
                                             availableData["Label"] = "Unknown label";
@@ -294,8 +300,8 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
                                     availableData["HexValue"] = QString::number(units.value(i), 16);
                                     availableData["DecimalValue"] =  QString::number(units.value(i));
 
-
                                     listOfAvailableData.append(availableData);
+                                    qDebug() << availableData;
                                 }
                             }
                             else
