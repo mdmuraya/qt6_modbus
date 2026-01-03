@@ -287,7 +287,7 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
                                         case 3:
                                             label = "DC bus output voltage (V)";
                                             break;
-                                        case 3:
+                                        case 4:
                                             label = "Output voltage (0.1 V)";
                                             break;
                                         default:
