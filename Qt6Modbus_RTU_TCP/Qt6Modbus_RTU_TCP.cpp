@@ -271,7 +271,7 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
 
                                     QVariantMap  availableData;
 
-                                    availableData["address"] = QString::number(units.startAddress() + i + 1);
+                                    availableData["address"] = QString::number(units.startAddress() + i);
                                     QString label = "Unknown label";
 
                                     switch (i)
@@ -285,9 +285,11 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatusTimerTimeout()
                                             label = "Frequency output (0.01 Hz)";
                                             break;
                                         case 3:
+                                            label = "Current output (0.0 A)";
+                                        case 4:
                                             label = "DC bus output voltage (V)";
                                             break;
-                                        case 4:
+                                        case 5:
                                             label = "Output voltage (0.1 V)";
                                             break;
                                         default:
