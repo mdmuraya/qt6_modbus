@@ -40,6 +40,9 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
         _modbusDevice->setConnectionParameter(QModbusDevice::SerialDataBitsParameter,QSerialPort::Data8);
         _modbusDevice->setConnectionParameter(QModbusDevice::SerialStopBitsParameter,QSerialPort::OneStop);
 
+        int _modbusDeviceId = 45;
+        _modbusDevice->setConnectionParameter(QModbusDevice::NetworkAddressParameter,_modbusDeviceId);
+
         _modbusDevice->setTimeout(10000);
         _modbusDevice->setNumberOfRetries(3);
 
@@ -63,11 +66,10 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
             //ui->actionDisconnect->setEnabled(true);
             qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " SUCCESS";
 
-            int _modbusDeviceId = 45;
             int addressToWrite = 8193;
 
             QVector<quint16> dataToWrite;
-            dataToWrite.append(5000); // Speed of the motor (Hz)
+            dataToWrite.append(5000); // Speed of the motor (0.01 Hz)
 
             QModbusDataUnit writeHoldingRegisters(QModbusDataUnit::HoldingRegisters, addressToWrite, dataToWrite.size());
 
@@ -76,7 +78,7 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
                 writeHoldingRegisters.setValue(i, dataToWrite.at(i));
             }
 
-            if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+            if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
             {
                 if (!reply->isFinished())
                 {
@@ -108,7 +110,6 @@ void Qt6Modbus_RTU_TCP::onClearVFDFaults()
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
-        int _modbusDeviceId = 45;
         int addressToWrite = 8192;
 
         QVector<quint16> dataToWrite;
@@ -121,7 +122,7 @@ void Qt6Modbus_RTU_TCP::onClearVFDFaults()
             writeHoldingRegisters.setValue(i, dataToWrite.at(i));
         }
 
-        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
         {
             if (!reply->isFinished())
             {
@@ -150,7 +151,6 @@ void Qt6Modbus_RTU_TCP::onStartMotorFWD()
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
-        int _modbusDeviceId = 45;
         int addressToWrite = 8192;
 
         QVector<quint16> dataToWrite;
@@ -163,7 +163,7 @@ void Qt6Modbus_RTU_TCP::onStartMotorFWD()
             writeHoldingRegisters.setValue(i, dataToWrite.at(i));
         }
 
-        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
         {
             if (!reply->isFinished())
             {
@@ -192,7 +192,6 @@ void Qt6Modbus_RTU_TCP::onStartMotorREV()
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
-        int _modbusDeviceId = 45;
         int addressToWrite = 8192;
 
         QVector<quint16> dataToWrite;
@@ -205,7 +204,7 @@ void Qt6Modbus_RTU_TCP::onStartMotorREV()
             writeHoldingRegisters.setValue(i, dataToWrite.at(i));
         }
 
-        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
         {
             if (!reply->isFinished())
             {
@@ -234,7 +233,6 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
-        int _modbusDeviceId = 45;
         int addressToWrite = 8192;
 
         QVector<quint16> dataToWrite;
@@ -247,7 +245,7 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
             writeHoldingRegisters.setValue(i, dataToWrite.at(i));
         }
 
-        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDeviceId))
+        if (auto *reply = _modbusDevice->sendWriteRequest(writeHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
         {
             if (!reply->isFinished())
             {
@@ -277,9 +275,8 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatus()
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
         QModbusDataUnit readHoldingRegisters(QModbusDataUnit::HoldingRegisters, 0, 10);
-        int _modbusDeviceId = 45;
 
-        if (auto *reply = _modbusDevice->sendReadRequest(readHoldingRegisters, _modbusDeviceId))
+        if (auto *reply = _modbusDevice->sendReadRequest(readHoldingRegisters, _modbusDevice->connectionParameter(QModbusDevice::NetworkAddressParameter).toInt()))
         {
             if (!reply->isFinished())
             {
