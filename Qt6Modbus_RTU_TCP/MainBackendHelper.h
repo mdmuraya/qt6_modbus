@@ -1,21 +1,25 @@
-#ifndef QT6MODBUS_RTU_TCP_H
-#define QT6MODBUS_RTU_TCP_H
+#ifndef MAINBACKENDHELPER_H
+#define MAINBACKENDHELPER_H
 
 #include <QObject>
 #include <QModbusClient>
 #include <QSerialPortInfo>
 #include <QVariantList>
 #include <QTimer>
+#include <QQmlEngine>
 
 
-class Qt6Modbus_RTU_TCP : public QObject
+class MainBackendHelper : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
     public:
-        explicit Qt6Modbus_RTU_TCP(QObject *parent = nullptr);
-        ~Qt6Modbus_RTU_TCP();
+        explicit MainBackendHelper(QObject *parent = nullptr);
+        ~MainBackendHelper();
 
     signals:
+        void getVFDStatus();
 
     public slots:
         QVariantList  getAvailableCOMPorts();
@@ -24,8 +28,6 @@ class Qt6Modbus_RTU_TCP : public QObject
         void onStartMotorFWD();
         void onStartMotorREV();
         void onStopMotor();
-
-    private slots:
         void onGetVFDStatus();
 
     private:
@@ -33,6 +35,7 @@ class Qt6Modbus_RTU_TCP : public QObject
         //QTimer *timer = nullptr;
         std::unique_ptr<QModbusClient> _modbusDevice; // Default initialized to nullptr
         std::unique_ptr<QTimer> _getVFDStatusTimer; // Default initialized to nullptr
+        QDateTime _dateTimeOnApplicationStart = QDateTime::currentDateTime();
 };
 
-#endif // QT6MODBUS_RTU_TCP_H
+#endif // MAINBACKENDHELPER_H

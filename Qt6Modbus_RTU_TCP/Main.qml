@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
+import Qt6Modbus_RTU_TCP
 
 
 
@@ -11,6 +12,7 @@ Window {
     height: 768
     visible: true
     title: qsTr("Qt6Modbus_RTU_TCP")
+
 
     ColumnLayout {
         anchors.margins: 10
@@ -39,7 +41,7 @@ Window {
                 onClicked: {
                     console.log("'Refresh COM ports' clicked")
                     console.log("Available COM ports: " + comboBoxVFDCOMPort.model)
-                    comboBoxVFDCOMPort.model = _Qt6Modbus_RTU_TCP.getAvailableCOMPorts()
+                    comboBoxVFDCOMPort.model = MainBackendHelper.getAvailableCOMPorts()
                 }
             }
 
@@ -59,12 +61,21 @@ Window {
         }
 
         RowLayout {
+            Label { text: "Manual" }
+                Switch {
+                    checked: false
+                    onToggled: saveSetting(checked)
+                }
+                Label { text: "Auto" }
+        }
+
+        RowLayout {
             Button {
                 id: buttonConnectToVFD
                 text: qsTr("Connect to VFD")
                 onClicked: {
                     console.log("'Connect to VFD' clicked")
-                    _Qt6Modbus_RTU_TCP.onConnectToVFD(comboBoxVFDCOMPort.model[comboBoxVFDCOMPort.currentIndex].uniqueId);
+                    MainBackendHelper.onConnectToVFD(comboBoxVFDCOMPort.model[comboBoxVFDCOMPort.currentIndex].uniqueId);
                 }
             }
 
@@ -73,7 +84,7 @@ Window {
                 text: qsTr("Clear VFD Faults")
                 onClicked: {
                     console.log("'Clear VFD Faults' clicked")
-                    _Qt6Modbus_RTU_TCP.onClearVFDFaults();
+                    MainBackendHelper.onClearVFDFaults();
                 }
             }
 
@@ -82,7 +93,7 @@ Window {
                 text: qsTr("Start Motor FWD")
                 onClicked: {
                     console.log("'Start Motor FWD' clicked")
-                    _Qt6Modbus_RTU_TCP.onStartMotorFWD();
+                    MainBackendHelper.onStartMotorFWD();
                 }
             }
 
@@ -91,7 +102,7 @@ Window {
                 text: qsTr("Start Motor REV")
                 onClicked: {
                     console.log("'Start Motor REV' clicked")
-                    _Qt6Modbus_RTU_TCP.onStartMotorREV();
+                    MainBackendHelper.onStartMotorREV();
                 }
             }
 
@@ -100,7 +111,7 @@ Window {
                 text: qsTr("Stop Motor")
                 onClicked: {
                     console.log("'Stop Motor' clicked")
-                    _Qt6Modbus_RTU_TCP.onStopMotor();
+                    MainBackendHelper.onStopMotor();
                 }
             }
         }
@@ -120,7 +131,8 @@ Window {
     }
 
     Component.onCompleted: {
-        comboBoxVFDCOMPort.model = _Qt6Modbus_RTU_TCP.getAvailableCOMPorts()
+        comboBoxVFDCOMPort.model = MainBackendHelper.getAvailableCOMPorts()
     }
+
 }
 

@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQmlContext>
-#include "Qt6Modbus_RTU_TCP.h"
+#include "MainBackendHelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    Qt6Modbus_RTU_TCP _Qt6Modbus_RTU_TCP;
+    MainBackendHelper _MainBackendHelper;
 
-    engine.rootContext()->setContextProperty("_Qt6Modbus_RTU_TCP", &_Qt6Modbus_RTU_TCP);
+    //engine.rootContext()->setContextProperty("_Qt6Modbus_RTU_TCP", &_Qt6Modbus_RTU_TCP);
 
     QObject::connect(
         &engine,

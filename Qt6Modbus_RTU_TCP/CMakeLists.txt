@@ -5,7 +5,7 @@ project(QML101 VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) # Enforce C++23 support
 
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 SerialBus)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Quick QuickControls2 SerialBus)
 
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -18,7 +18,7 @@ qt_add_qml_module(appQt6Modbus_RTU_TCP
     URI Qt6Modbus_RTU_TCP
     QML_FILES
         Main.qml
-        SOURCES Qt6Modbus_RTU_TCP.h Qt6Modbus_RTU_TCP.cpp
+        SOURCES MainBackendHelper.h MainBackendHelper.cpp
         SOURCES BoilerPlate.h BoilerPlate.cpp
 )
 

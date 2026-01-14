@@ -1,4 +1,4 @@
-#include "Qt6Modbus_RTU_TCP.h"
+#include "MainBackendHelper.h"
 #include <QDebug>
 #include <QModbusRtuSerialClient>
 #include <QModbusTcpClient>
@@ -6,31 +6,34 @@
 #include <QSerialPortInfo>
 #include <QVariantList>
 
-Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP(QObject *parent)
+
+MainBackendHelper::MainBackendHelper(QObject *parent)
     : QObject{parent}
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::Qt6Modbus_RTU_TCP()";
+    qDebug() << "MainBackendHelper::MainBackendHelper()";
 
     _modbusDevice = std::make_unique<QModbusRtuSerialClient>();
     _getVFDStatusTimer = std::make_unique<QTimer>();
 
     // setup signal and slot
-    QObject::connect(_getVFDStatusTimer.get(), SIGNAL(timeout()),this, SLOT(onGetVFDStatus()));
+    connect(_getVFDStatusTimer.get(), &QTimer::timeout, [&](){
+        emit getVFDStatus();
+    });
+
+    connect(this, &MainBackendHelper::getVFDStatus, this, &MainBackendHelper::onGetVFDStatus);
 
     _getVFDStatusTimer->start(1000); //1 second
 
 }
 
-void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
+void MainBackendHelper::onConnectToVFD(QString port)
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port;
+    qDebug() << "MainBackendHelper::onConnectToVFD() on COM port: " + port;
 
     if(_modbusDevice == nullptr)
     {
         _modbusDevice = std::make_unique<QModbusRtuSerialClient>();
     }
-
-    //_modbusDevice = new QModbusRtuSerialClient(this);
 
     if (_modbusDevice->state() != QModbusDevice::ConnectedState)
     {
@@ -43,7 +46,7 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
         int _modbusDeviceId = 45;
         _modbusDevice->setConnectionParameter(QModbusDevice::NetworkAddressParameter,_modbusDeviceId);
 
-        _modbusDevice->setTimeout(10000);
+        _modbusDevice->setTimeout(1000);
         _modbusDevice->setNumberOfRetries(3);
 
         // Connect to signals to handle connection status and errors
@@ -60,11 +63,11 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
 
         if (!_modbusDevice->connectDevice()) {
             //statusBar()->showMessage(tr("Connect failed: %1").arg(_modbusDevice->errorString()), 5000);
-            qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " FAILED";
+            qDebug() << "MainBackendHelper::onConnectToVFD() on COM port: " + port + " FAILED";
         } else {
             //ui->actionConnect->setEnabled(false);
             //ui->actionDisconnect->setEnabled(true);
-            qDebug() << "Qt6Modbus_RTU_TCP::onConnectToVFD() on COM port: " + port + " SUCCESS";
+            qDebug() << "MainBackendHelper::onConnectToVFD() on COM port: " + port + " SUCCESS";
 
             int addressToWrite = 8193;
 
@@ -104,9 +107,9 @@ void Qt6Modbus_RTU_TCP::onConnectToVFD(QString port)
     }
 }
 
-void Qt6Modbus_RTU_TCP::onClearVFDFaults()
+void MainBackendHelper::onClearVFDFaults()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onClearVFDFaults()";
+    qDebug() << "MainBackendHelper::onClearVFDFaults()";
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -145,9 +148,9 @@ void Qt6Modbus_RTU_TCP::onClearVFDFaults()
     }
 }
 
-void Qt6Modbus_RTU_TCP::onStartMotorFWD()
+void MainBackendHelper::onStartMotorFWD()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onStartMotorFWD()";
+    qDebug() << "MainBackendHelper::onStartMotorFWD()";
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -186,9 +189,9 @@ void Qt6Modbus_RTU_TCP::onStartMotorFWD()
     }
 }
 
-void Qt6Modbus_RTU_TCP::onStartMotorREV()
+void MainBackendHelper::onStartMotorREV()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onStartMotorREV()";
+    qDebug() << "MainBackendHelper::onStartMotorREV()";
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -227,9 +230,9 @@ void Qt6Modbus_RTU_TCP::onStartMotorREV()
     }
 }
 
-void Qt6Modbus_RTU_TCP::onStopMotor()
+void MainBackendHelper::onStopMotor()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onStopMotor()";
+    qDebug() << "MainBackendHelper::onStopMotor()";
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -268,9 +271,17 @@ void Qt6Modbus_RTU_TCP::onStopMotor()
     }
 }
 
-void Qt6Modbus_RTU_TCP::onGetVFDStatus()
+void MainBackendHelper::onGetVFDStatus()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::onGetVFDStatus()";
+    QDateTime dateTimeUTC = QDateTime::currentDateTimeUtc();
+    qDebug() << "MainBackendHelper::onGetVFDStatus()";
+
+    QTimeZone timeZoneAmericaToronto("America/Toronto"); // Specify target time zone
+
+    QDateTime dateTimeAmericaToronto = dateTimeUTC.toTimeZone(timeZoneAmericaToronto);
+
+    qDebug() << "UTC:" << dateTimeUTC.toString();
+    qDebug() << "Toronto:" << dateTimeAmericaToronto.toString();
 
     if (_modbusDevice->state() == QModbusDevice::ConnectedState)
     {
@@ -351,7 +362,7 @@ void Qt6Modbus_RTU_TCP::onGetVFDStatus()
 }
 
 
-QVariantList  Qt6Modbus_RTU_TCP::getAvailableCOMPorts()
+QVariantList  MainBackendHelper::getAvailableCOMPorts()
 {
     QList<QSerialPortInfo> serialPortInfos = QSerialPortInfo::availablePorts();
     qDebug() << "Available ports count:" << serialPortInfos.count();
@@ -381,9 +392,9 @@ QVariantList  Qt6Modbus_RTU_TCP::getAvailableCOMPorts()
 
 }
 
-Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()
+MainBackendHelper::~MainBackendHelper()
 {
-    qDebug() << "Qt6Modbus_RTU_TCP::~Qt6Modbus_RTU_TCP()";
+    qDebug() << "MainBackendHelper::~MainBackendHelper()";
 }
 
 
