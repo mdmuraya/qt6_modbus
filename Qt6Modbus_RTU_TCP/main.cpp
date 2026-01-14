@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    MainBackendHelper _MainBackendHelper;
+    //MainBackendHelper _MainBackendHelper;
 
     //engine.rootContext()->setContextProperty("_Qt6Modbus_RTU_TCP", &_Qt6Modbus_RTU_TCP);
 

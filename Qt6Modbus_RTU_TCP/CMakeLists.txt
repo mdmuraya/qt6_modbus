@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 
-project(QML101 VERSION 0.1 LANGUAGES CXX)
+project(Qt6Modbus_RTU_TCP VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) # Enforce C++23 support
@@ -15,7 +15,7 @@ qt_add_executable(appQt6Modbus_RTU_TCP
 )
 
 qt_add_qml_module(appQt6Modbus_RTU_TCP
-    URI Qt6Modbus_RTU_TCP
+    URI ${PROJECT_NAME}
     QML_FILES
         Main.qml
         SOURCES MainBackendHelper.h MainBackendHelper.cpp
