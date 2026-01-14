@@ -19,7 +19,7 @@ class MainBackendHelper : public QObject
         ~MainBackendHelper();
 
     signals:
-        void getVFDStatus();
+        void requestVFDStatus();
 
     public slots:
         QVariantList  getAvailableCOMPorts();
@@ -28,13 +28,13 @@ class MainBackendHelper : public QObject
         void onStartMotorFWD();
         void onStartMotorREV();
         void onStopMotor();
-        void onGetVFDStatus();
+        void handleVFDStatusRequest();
 
     private:
         //QModbusClient *modbusDevice = nullptr;
         //QTimer *timer = nullptr;
         std::unique_ptr<QModbusClient> _modbusDevice; // Default initialized to nullptr
-        std::unique_ptr<QTimer> _getVFDStatusTimer; // Default initialized to nullptr
+        std::unique_ptr<QTimer> _GetVFDStatusTimer; // Default initialized to nullptr
         QDateTime _dateTimeOnApplicationStart = QDateTime::currentDateTime();
 };
 

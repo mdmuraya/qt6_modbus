@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     //MainBackendHelper _MainBackendHelper;
 
-    //engine.rootContext()->setContextProperty("_Qt6Modbus_RTU_TCP", &_Qt6Modbus_RTU_TCP);
+    //engine.rootContext()->setContextProperty("_MainBackendHelper", &_MainBackendHelper);
 
     QObject::connect(
         &engine,
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
 
     QQuickStyle::setStyle("Material");
-    engine.loadFromModule("Qt6Modbus_RTU_TCP", "Main");
+    engine.loadFromModule("Qt6ModbusVFDController", "Main");
 
     return app.exec();
 }

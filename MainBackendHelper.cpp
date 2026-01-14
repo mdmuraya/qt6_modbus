@@ -1,10 +1,11 @@
-#include "MainBackendHelper.h"
 #include <QDebug>
 #include <QModbusRtuSerialClient>
 #include <QModbusTcpClient>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QVariantList>
+
+#include "MainBackendHelper.h"
 
 
 MainBackendHelper::MainBackendHelper(QObject *parent)
@@ -13,16 +14,16 @@ MainBackendHelper::MainBackendHelper(QObject *parent)
     qDebug() << "MainBackendHelper::MainBackendHelper()";
 
     _modbusDevice = std::make_unique<QModbusRtuSerialClient>();
-    _getVFDStatusTimer = std::make_unique<QTimer>();
+    _GetVFDStatusTimer = std::make_unique<QTimer>();
 
-    // setup signal and slot
-    connect(_getVFDStatusTimer.get(), &QTimer::timeout, [&](){
-        emit getVFDStatus();
+    // setup signals and slots
+    connect(_GetVFDStatusTimer.get(), &QTimer::timeout, [this](){
+        emit requestVFDStatus();
     });
 
-    connect(this, &MainBackendHelper::getVFDStatus, this, &MainBackendHelper::onGetVFDStatus);
+    connect(this, &MainBackendHelper::requestVFDStatus, this, &MainBackendHelper::handleVFDStatusRequest);
 
-    _getVFDStatusTimer->start(1000); //1 second
+    _GetVFDStatusTimer->start(1000); //1 second
 
 }
 
@@ -271,10 +272,10 @@ void MainBackendHelper::onStopMotor()
     }
 }
 
-void MainBackendHelper::onGetVFDStatus()
+void MainBackendHelper::handleVFDStatusRequest()
 {
     QDateTime dateTimeUTC = QDateTime::currentDateTimeUtc();
-    qDebug() << "MainBackendHelper::onGetVFDStatus()";
+    qDebug() << "C++ MainBackendHelper::handleVFDStatusRequest()";
 
     QTimeZone timeZoneAmericaToronto("America/Toronto"); // Specify target time zone
 

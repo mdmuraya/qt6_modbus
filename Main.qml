@@ -2,9 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
-import Qt6Modbus_RTU_TCP
-
-
+import Qt6ModbusVFDController
 
 Window {
     id: mainWindowId
@@ -132,6 +130,14 @@ Window {
 
     Component.onCompleted: {
         comboBoxVFDCOMPort.model = MainBackendHelper.getAvailableCOMPorts()
+    }
+
+
+    Connections {
+        target: MainBackendHelper
+        onRequestVFDStatus: {
+            console.log("QML MainBackendHelper.onRequestVFDStatus ==>> BLAH BLAH BLAH!!!")
+        }
     }
 
 }
