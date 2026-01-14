@@ -28,7 +28,7 @@ class MainBackendHelper : public QObject
         void onStartMotorFWD();
         void onStartMotorREV();
         void onStopMotor();
-        void handleVFDStatusRequest();
+        void onRequestVFDStatus();
 
     private:
         //QModbusClient *modbusDevice = nullptr;

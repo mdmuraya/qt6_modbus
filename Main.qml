@@ -135,7 +135,7 @@ Window {
 
     Connections {
         target: MainBackendHelper
-        onRequestVFDStatus: {
+        function onRequestVFDStatus () {
             console.log("QML MainBackendHelper.onRequestVFDStatus ==>> BLAH BLAH BLAH!!!")
         }
     }

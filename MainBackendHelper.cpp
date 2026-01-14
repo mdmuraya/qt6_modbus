@@ -21,7 +21,7 @@ MainBackendHelper::MainBackendHelper(QObject *parent)
         emit requestVFDStatus();
     });
 
-    connect(this, &MainBackendHelper::requestVFDStatus, this, &MainBackendHelper::handleVFDStatusRequest);
+    connect(this, &MainBackendHelper::requestVFDStatus, this, &MainBackendHelper::onRequestVFDStatus);
 
     _GetVFDStatusTimer->start(1000); //1 second
 
@@ -272,10 +272,10 @@ void MainBackendHelper::onStopMotor()
     }
 }
 
-void MainBackendHelper::handleVFDStatusRequest()
+void MainBackendHelper::onRequestVFDStatus()
 {
     QDateTime dateTimeUTC = QDateTime::currentDateTimeUtc();
-    qDebug() << "C++ MainBackendHelper::handleVFDStatusRequest()";
+    qDebug() << "C++ MainBackendHelper::onRequestVFDStatus()";
 
     QTimeZone timeZoneAmericaToronto("America/Toronto"); // Specify target time zone
 
