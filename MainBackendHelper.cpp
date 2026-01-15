@@ -8,22 +8,24 @@
 #include "MainBackendHelper.h"
 
 
-MainBackendHelper::MainBackendHelper(QObject *parent)
-    : QObject{parent}
+MainBackendHelper::MainBackendHelper(QObject *parent) :
+    QObject (parent),
+    _modbusDevice (std::make_unique<QModbusRtuSerialClient>()),
+    _getVFDStatusTimer (std::make_unique<QTimer>())
 {
     qDebug() << "MainBackendHelper::MainBackendHelper()";
 
-    _modbusDevice = std::make_unique<QModbusRtuSerialClient>();
-    _GetVFDStatusTimer = std::make_unique<QTimer>();
+    //_modbusDevice = std::make_unique<QModbusRtuSerialClient>();
+    //_getVFDStatusTimer = std::make_unique<QTimer>();
 
     // setup signals and slots
-    connect(_GetVFDStatusTimer.get(), &QTimer::timeout, [this](){
+    connect(_getVFDStatusTimer.get(), &QTimer::timeout, [this](){
         emit requestVFDStatus();
     });
 
     connect(this, &MainBackendHelper::requestVFDStatus, this, &MainBackendHelper::onRequestVFDStatus);
 
-    _GetVFDStatusTimer->start(1000); //1 second
+    _getVFDStatusTimer->start(1000); //1 second
 
 }
 

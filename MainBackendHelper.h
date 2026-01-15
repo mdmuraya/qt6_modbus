@@ -34,7 +34,7 @@ class MainBackendHelper : public QObject
         //QModbusClient *modbusDevice = nullptr;
         //QTimer *timer = nullptr;
         std::unique_ptr<QModbusClient> _modbusDevice; // Default initialized to nullptr
-        std::unique_ptr<QTimer> _GetVFDStatusTimer; // Default initialized to nullptr
+        std::unique_ptr<QTimer> _getVFDStatusTimer; // Default initialized to nullptr
         QDateTime _dateTimeOnApplicationStart = QDateTime::currentDateTime();
 };
 
